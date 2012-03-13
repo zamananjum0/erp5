@@ -1374,6 +1374,7 @@ class TestERP5WebWithSimpleSecurity(ERP5TypeTestCase):
     self.createUser('admin', ['Manager'])
     self.createUser('erp5user', ['Auditor', 'Author'])
     self.createUser('webmaster', ['Assignor'])
+    self.web_site_module = self.portal.getDefaultModule('Web Site Module')
     transaction.commit()
     self.tic()
 
