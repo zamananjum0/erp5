@@ -69,6 +69,7 @@ class TestTemplate(ERP5TypeTestCase):
     self.portal.foo_module.manage_role(role_to_manage='Author',
                                 permissions=[Permissions.AddPortalContent,
                                              Permissions.CopyOrMove,
+					     Permissions.AccessContentsInformation,
                                              ])
 
   def test_Template(self):
