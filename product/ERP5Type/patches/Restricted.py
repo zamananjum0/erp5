@@ -136,6 +136,26 @@ ContainerAssertions[set] = _check_set_access
 
 ContainerAssertions[frozenset] = 1
 
+_generator_type = type((x for x in []))
+_generator_white_list = { 'next': 1 }
+def _check_generator_access(name, value):
+
+    # Check whether value is a dict method
+    self = getattr(value, '__self__', None)
+    if self is None: # item
+        return 1
+
+    # Disallow spoofing
+    if type(self) is not _generator_type:
+        return 0
+    if getattr(value, '__name__', None) != name:
+        return 0
+    return _generator_white_list.get(name, 0)
+
+ContainerAssertions[_generator_type] = _check_generator_access
+
+
+
 from collections import OrderedDict
 OrderedDict.__allow_access_to_unprotected_subobjects__ = 1
 
