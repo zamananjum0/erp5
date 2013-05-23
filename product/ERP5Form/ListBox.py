@@ -1975,6 +1975,7 @@ class ListBoxRenderer:
           new_param_dict = param_dict.copy()
           new_param_dict['limit'] = (start, max_lines)
           selection.edit(params = new_param_dict)
+          # object_list need to be changed to generator
           object_list = selection(method=domain_list_method, context=domain_context, REQUEST=self.request)
           selection.edit(params = param_dict) # XXX Necessary?
 
@@ -1987,6 +1988,7 @@ class ListBoxRenderer:
           report_section_list.append(ReportSection(is_summary = False,
                                                    object_list_len = object_list_len - len(object_list) - start))
         else:
+          # object_list can't be changed to generator, cos we need the length
           object_list = selection(method=domain_list_method, context=domain_context, REQUEST=self.request)
           object_list_len = len(object_list)
           report_section_list.append(ReportSection(is_summary = False,
@@ -1994,6 +1996,7 @@ class ListBoxRenderer:
                                                    object_list_len = object_list_len))
       else:
         # If list_method is None, use already selected values.
+        # object_list can't be changed to generator, cos we need the length
         object_list = selection_tool.getSelectionValueList(selection_name,
                                                                    context = context, REQUEST = self.request)
         object_list_len= len(object_list)
@@ -2002,6 +2005,42 @@ class ListBoxRenderer:
                                                  object_list_len = object_list_len))
 
     return report_section_list
+
+  def initiallines(self):
+    """
+      This part was in query, but query is a generator now, so we need to initiallines in 
+      this function
+    """
+    start = self.getLineStart()
+    max_lines = self.getMaxLineNumber()
+    if self.isHideRowsOnNoSearchCriterion():
+      report_section_list = []
+    else:
+      report_section_list = self.getReportSectionList()
+    param_dict = self.getParamDict()
+
+    # Set the total number of objects.
+    self.total_size = sum([s.object_list_len for s in report_section_list])
+
+    # Calculuate the start and the end offsets, and set the page numbers.
+    if max_lines == 0:
+      end = self.total_size
+      self.total_pages = 1
+      self.current_page = 0
+    else:
+      self.total_pages = int(max(self.total_size - 1, 0) / max_lines) + 1
+      if start >= self.total_size:
+        start = max(self.total_size - 1, 0)
+      start -= (start % max_lines)
+      self.current_page = int(start / max_lines)
+      end = min(start + max_lines, self.total_size)
+      param_dict['list_start'] = start
+      param_dict['list_lines'] = max_lines
+      selection = self.getSelection()
+      selection.edit(params = param_dict)
+
+    # Make a list of lines.
+    line_class = self.getLineClass()
 
   def query(self):
     """Get report sections and construct a list of lines. Note that this method has a side
@@ -2037,7 +2076,6 @@ class ListBoxRenderer:
 
     # Make a list of lines.
     line_class = self.getLineClass()
-    line_list = []
 
     try:
       section_index = 0
@@ -2076,12 +2114,10 @@ class ListBoxRenderer:
                           depth = current_section.depth,
                           domain_title = current_section.domain_title,
                           row_css_class_name = row_css_class_name)
-        line_list.append(line)
+        yield line
     except IndexError:
       # If the report section list is empty, nothing to do.
-      pass
-
-    return line_list
+      raise StopIteration()
 
   def render(self, **kw):
     """Render the data. This must be overridden.
@@ -2663,14 +2699,12 @@ class ListBoxListRenderer(ListBoxRenderer):
   def render(self, **kw):
     """Render the data in a list of ListBoxLine objects.
     """
-    listboxline_list = []
-
     # Make a title line.
     title_listboxline = ListBoxLine()
     title_listboxline.markTitleLine()
     for c in self.getSelectedColumnList():
       title_listboxline.addColumn(c[0], c[1].encode(self.getEncoding()))
-    listboxline_list.append(title_listboxline)
+    yield title_listboxline
 
     # Obtain the list of lines.
     checked_uid_set = set(self.getCheckedUidList())
@@ -2705,7 +2739,7 @@ class ListBoxListRenderer(ListBoxRenderer):
 
         listboxline.addColumn(sql, value)
 
-      listboxline_list.append(listboxline)
+      yield listboxline
 
     # Make a stat line, if enabled.
     if self.showStat():
@@ -2723,9 +2757,8 @@ class ListBoxListRenderer(ListBoxRenderer):
 
         stat_listboxline.addColumn(sql, value)
 
-      listboxline_list.append(stat_listboxline)
+      yield stat_listboxline
 
-    return listboxline_list
 
 class ListBoxValidator(Validator.Validator):
     property_names = Validator.Validator.property_names
