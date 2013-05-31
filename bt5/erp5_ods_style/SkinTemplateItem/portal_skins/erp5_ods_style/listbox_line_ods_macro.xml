@@ -49,9 +49,7 @@
 \n
     <tal:block metal:define-macro="listbox_line">\n
     \n
-      <tal:block tal:condition="python: listbox_line_structure[\'line\'] is not None"\n
-                 tal:define="listboxline python: listbox_line_structure[\'line\']">\n
-\n
+      \n
         <!-- title line itself is rendered in listbox_ods_macro --> \n
         <tal:block tal:condition="not:listboxline/isTitleLine">\n
           <table:table-row>\n
@@ -105,21 +103,7 @@
           </table:table-row>\n
 \n
         </tal:block>\n
-      </tal:block>\n
-      <tal:block tal:condition="python: len(listbox_line_structure[\'line_list\'])">\n
-        <tal:block tal:condition="python: listbox_line_structure[\'line\'] is None">\n
-          <tal:block tal:repeat="listbox_line_structure python: listbox_line_structure[\'line_list\']">\n
-            <tal:block metal:use-macro="here/listbox_line_ods_macro/macros/listbox_line"/>\n
-          </tal:block>\n
-        </tal:block>\n
-        <tal:block tal:condition="python: listbox_line_structure[\'line\'] is not None">\n
-          <table:table-row-group>\n
-            <tal:block tal:repeat="listbox_line_structure python: listbox_line_structure[\'line_list\']">\n
-              <tal:block metal:use-macro="here/listbox_line_ods_macro/macros/listbox_line"/>\n
-            </tal:block>\n
-          </table:table-row-group>\n
-        </tal:block>\n
-      </tal:block>\n
+ \n
     </tal:block>\n
   </office:spreadsheet>\n
 </office:body>\n
