@@ -57,6 +57,11 @@ request.set(\'portal_skin\', \'ODS\') # Some TALES expressions checks this\n
 if target_language:\n
   request[\'AcceptLanguage\'].set(target_language, 10)\n
 \n
+if selection_name:\n
+  selection_params = context.getPortalObject().portal_selections.getSelectionParamsFor(selection_name)\n
+  selection_params[\'limit\']=None\n
+  context.getPortalObject().portal_selections.setSelectionParamsFor(selection_name, selection_params)\n
+\n
 if print_mode == \'list_view\' or print_mode == \'list_view_separate_sheet\':\n
   if print_mode == \'list_view_separate_sheet\':\n
     request.set(\'sheet_per_report_section\', 1)\n
@@ -67,7 +72,7 @@ return getattr(context, form_id)()\n
         </item>
         <item>
             <key> <string>_params</string> </key>
-            <value> <string>form_id=\'\', target_language=\'\', print_mode=\'\', **kw</string> </value>
+            <value> <string>form_id=\'\', target_language=\'\', print_mode=\'\',selection_name=\'\', **kw</string> </value>
         </item>
         <item>
             <key> <string>id</string> </key>
