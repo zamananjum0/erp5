@@ -49,7 +49,6 @@
 \n
     <tal:block metal:define-macro="listbox">\n
       <tal:block tal:define="render_prefix render_prefix | nothing;\n
-               listboxline_list python: listbox.get_value(\'default\', render_format=\'list\', REQUEST=request, render_prefix=render_prefix);\n
                DateTime nocall: modules/DateTime/DateTime;\n
                selection_name python: listbox.get_value(\'selection_name\', REQUEST=request);\n
                editable_columns python: listbox.get_value(\'editable_columns\', REQUEST=request);\n
@@ -57,9 +56,9 @@
                selection python: here.portal_selections.getSelectionFor(selection_name, REQUEST=request);\n
                is_report_tree_mode selection/report_tree_mode | python: 0;\n
                is_domain_tree_mode selection/domain_tree_mode | python: 0;\n
-               max_section_depth python: max([x.getSectionDepth() for x in listboxline_list]) + int(is_report_tree_mode);\n
-               listbox_line_structure python: here.Listbox_getReportTreeStructure(listbox_line_list=listboxline_list[1:], is_report_tree_mode=is_report_tree_mode, is_domain_tree_mode=is_domain_tree_mode, max_section_depth=max_section_depth);\n
-               listboxline python:listboxline_list[0];\n
+               listboxline_list python: listbox.get_value(\'default\', render_format=\'list\', REQUEST=request, render_prefix=render_prefix);\n
+               max_section_depth python: 1;\n
+               listboxline python: listboxline_list.next();\n
                " i18n:domain="ui">\n
 \n
             <tal:block tal:condition="listboxline/isTitleLine">\n
@@ -127,12 +126,14 @@
               </tal:block> \n
             </tal:block>\n
 \n
-        <tal:block metal:use-macro="here/listbox_line_ods_macro/macros/listbox_line"/>\n
+          <tal:block tal:repeat="listboxline python: listboxline_list">\n
+            <tal:block metal:use-macro="here/listbox_line_ods_macro/macros/listbox_line"/>\n
+          </tal:block>\n
 \n
           <table:table-row metal:define-slot="table_bottom_line">\n
             <tal:block tal:repeat="listboxline python: listboxline_list">\n
               <tal:block tal:condition="listboxline/isTitleLine">\n
-                <tal:block tal:repeat="column_item listboxline/getColumnItemList">\n
+                <tal:block tal:repeat="column_ilistboxline_listtem listboxline/getColumnItemList">\n
                   <tal:block tal:define="column_property python: column_item[1]; ">\n
                     <tal:block tal:condition="python: column_property is not None">\n
                       <table:table-cell table:style-name=\'table-bottom-line\'/>\n
