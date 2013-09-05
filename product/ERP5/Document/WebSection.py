@@ -29,6 +29,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ERP5Type import Permissions, PropertySheet
+from Products.CMFCore.utils import _setCacheHeaders, _ViewEmulator
 from Products.ERP5.Document.Domain import Domain
 from Products.ERP5.mixin.extensible_traversable import DocumentExtensibleTraversableMixin
 from Acquisition import aq_base, aq_inner 
@@ -232,6 +233,7 @@ class WebSection(Domain, DocumentExtensibleTraversableMixin):
         if custom_render_method_id is not None:
           if document is None:
             document = self
+          _setCacheHeaders(_ViewEmulator().__of__(document), {})
           return getattr(document, custom_render_method_id)()
         elif document is not None:
           return document()
