@@ -2613,7 +2613,7 @@ class TestSaleInvoice(TestSaleInvoiceMixin, TestInvoice, ERP5TypeTestCase):
       base_unit_quantity=0.01)
     sequence.edit(currency=currency)
 
-  def stepCreateInvoiceWithBadPrecision(self, sequence):
+  def stepCheckInvoiceWithBadPrecision(self, sequence):
     portal = self.portal
     vendor = sequence.get('vendor')
     invoice = portal.accounting_module.newContent(
@@ -2646,6 +2646,11 @@ class TestSaleInvoice(TestSaleInvoiceMixin, TestInvoice, ERP5TypeTestCase):
       if m.getSourceValue().getAccountType() == \
         "asset/receivable"][0]
     self.assertEquals(0.03, receivable_line.getSourceDebit())
+    data = invoice.Invoice_getODTDataDict()
+    precision = invoice.getQuantityPrecisionFromResource(
+      invoice.getResource())
+    self.assertEquals(round(data['total_price'], precision),
+      receivable_line.getSourceDebit())
     vat_line = [m for m in movement_list \
       if m.getSourceValue().getAccountType() == \
         "liability/payable/collected_vat"][0]
@@ -2655,12 +2660,16 @@ class TestSaleInvoice(TestSaleInvoiceMixin, TestInvoice, ERP5TypeTestCase):
         "income"][0]
     self.assertEquals(0.03, income_line.getSourceCredit())
 
-  def test_rounding_issue(self):
+  def test_AccountingTransaction_roundDebitCredit(self):
+    """
+      Check that with two invoice lines with total price equal 0.14,
+      the receivable line will be 0.03 and vat line 0
+    """
     sequence_list = SequenceList()
     sequence_list.addSequenceString("""
       stepCreateCurrency
       stepCreateEntities
-      stepCreateInvoiceWithBadPrecision
+      stepCheckInvoiceWithBadPrecision
     """)
     sequence_list.play(self)
 
