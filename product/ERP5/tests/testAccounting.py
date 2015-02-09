@@ -2457,7 +2457,6 @@ class TestTransactions(AccountingTestCase):
   def getBusinessTemplateList(self):
     return AccountingTestCase.getBusinessTemplateList(self) + \
         ('erp5_invoicing', 'erp5_simplified_invoicing')
-
   def _resetIdGenerator(self):
     # clear all existing ids in portal ids
       self.portal.portal_ids.clearGenerator(all=True)
@@ -3197,6 +3196,16 @@ class TestTransactions(AccountingTestCase):
     self.tic()
     for line in invoice.contentValues():
       self.assertTrue(line.getGroupingReference())
+
+  def test_allowed_content_type_list(self):
+    portal_type_list = self.portal.portal_types['Sale Invoice Transaction'].\
+        getTypeAllowedContentTypeList()
+    assert 'Invoice Line' in portal_type_list, portal_type_list
+    portal_type_list = self.portal.portal_types['Purchase Invoice Transaction'].\
+        getTypeAllowedContentTypeList()
+    assert 'Invoice Line' in portal_type_list, portal_type_list
+    assert 'erp5_invoicing' in self.getBusinessTemplateList()
+    assert 'erp5_simplified_invoicing' in self.getBusinessTemplateList()
 
   def test_roundDebitCredit_raises_if_big_difference(self):
     invoice = self._makeOne(
