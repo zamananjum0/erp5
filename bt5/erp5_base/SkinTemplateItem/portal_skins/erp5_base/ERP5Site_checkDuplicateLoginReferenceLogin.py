@@ -1,9 +1,9 @@
+from Products.CMFActivity.ActiveResult import ActiveResult
+from Products.ZSQLCatalog.SQLCatalog import SimpleQuery, ComplexQuery
 portal = context.getPortalObject()
 result = []
 sql_result = portal.ERP5Site_zGetDuplicateLoginReferenceList()
 if len(sql_result):
-  from Products.CMFActivity.ActiveResult import ActiveResult
-  from Products.ZSQLCatalog.SQLCatalog import SimpleQuery, ComplexQuery
   query = ComplexQuery(
     *[ComplexQuery(SimpleQuery(portal_type=i['portal_type']),
                    SimpleQuery(reference=i['reference'])) for i in sql_result],
@@ -16,6 +16,13 @@ if len(sql_result):
   active_result.edit(summary='Logins having the same reference exist',
                      severity=len(sql_result),
                      detail='\n'.join(result))
-  active_process = context.newActiveProcess()
-  active_process.postResult(active_result)
-  return active_process
+elif context.sense():
+  active_result = ActiveResult()
+  active_result.edit(summary='Logins having the same reference does not exist',
+                     severity=0)
+else:
+  return
+
+active_process = context.newActiveProcess()
+active_process.postResult(active_result)
+return active_process
