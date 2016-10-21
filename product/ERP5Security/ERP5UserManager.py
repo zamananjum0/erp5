@@ -142,8 +142,9 @@ class ERP5UserManager(BasePlugin):
     ).dictionaries()
     searchLogin = lambda **kw: unrestrictedSearchResults(
       select_list=('parent_uid', 'reference'),
-      portal_type=login_portal_type,
+      portal_type=login_portal_type or [],
       validation_state='validated',
+      **kw
     ).dictionaries()
     if login is None:
       # Only search by id if login is not given. Same logic as in
@@ -177,7 +178,7 @@ class ERP5UserManager(BasePlugin):
       login_dict = {}
       if user_list:
         for login in searchLogin(parent_uid=[x['uid'] for x in user_list]):
-          login_dict.setdefault(login.parent_uid).append(login)
+          login_dict.setdefault(login['parent_uid'], []).append(login)
       if has_super_user:
         user_list.append({'uid': None, 'reference': SUPER_USER})
     else:
@@ -193,11 +194,11 @@ class ERP5UserManager(BasePlugin):
           reference={
             'query': login,
             'key': 'ExactMatch' if exact_match else 'Keyword',
-          }
+          },
           limit=max_results,
         ):
-          if requested(login['refernce']):
-            login_dict.setdefault(login['parent_uid']).append(x)
+          if requested(login['reference']):
+            login_dict.setdefault(login['parent_uid'], []).append(login)
       if login_dict:
         user_list = searchUser(uid=list(login_dict))
       else:
