@@ -810,6 +810,9 @@ class TestLocalRoleManagement(ERP5TypeTestCase):
     assignment = loginable_person.newContent(portal_type='Assignment',
                                              function='another_subcat')
     assignment.open()
+    loginable_person.newContent(portal_type='ERP5 Login',
+                                reference='guest',
+                                password='guest').validate()
     self.tic()
 
     person_module_type_information = self.getTypesTool()['Person Module']
@@ -864,11 +867,13 @@ class TestLocalRoleManagement(ERP5TypeTestCase):
 
     reference = 'UserReferenceTextWhichShouldBeHardToGeneratedInAnyHumanOrComputerLanguage'
     loginable_person = self.getPersonModule().newContent(portal_type='Person',
-                                                         reference=reference,
-                                                         password='guest')
+                                                         reference=reference)
     assignment = loginable_person.newContent(portal_type='Assignment',
                                              function='another_subcat')
     assignment.open()
+    loginable_person.newContent(portal_type='ERP5 Login',
+                                reference=reference,
+                                password='guest').validate()
     portal_types = portal.portal_types
     for portal_type in ('Person Module', 'Person', 'Web Site Module', 'Web Site',
                         'Web Page'):
