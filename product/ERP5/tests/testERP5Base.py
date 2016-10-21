@@ -1155,7 +1155,10 @@ class TestERP5Base(ERP5TypeTestCase):
     self.assertTrue(comment in [q['comment'] for q in workflow_history])
 
   def test_user_creation(self):
-    person = self.portal.person_module.newContent(portal_type='Person')
+    person = self.portal.person_module.newContent(
+      portal_type='Person',
+      reference='user',
+    )
     assignment = person.newContent(portal_type='Assignment',
                                    group='nexedi')
     self.assertNotEquals(None, assignment.getGroupValue())
@@ -1167,14 +1170,14 @@ class TestERP5Base(ERP5TypeTestCase):
     self.tic()
 
     # a user is created
-    user = self.portal.acl_users.getUserById('user_login')
+    user = self.portal.acl_users.getUserById('user')
     self.assertNotEquals(None, user)
 
     # and this user has a preference created
     newSecurityManager(None, user.__of__(self.portal.acl_users))
     self.assertNotEquals(None,
         self.portal.portal_catalog.getResultValue(portal_type='Preference',
-                                                  owner='user_login'))
+                                                  owner='user'))
     # for his assignent group
     self.assertEqual('group/nexedi',
         self.portal.portal_preferences.getPreferredSectionCategory())

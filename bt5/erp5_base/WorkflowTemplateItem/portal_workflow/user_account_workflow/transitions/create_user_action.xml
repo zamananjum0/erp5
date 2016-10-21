@@ -88,7 +88,7 @@
       <dictionary>
         <item>
             <key> <string>text</string> </key>
-            <value> <string>python:not here.getReference()</string> </value>
+            <value> <string>here/hasReference</string> </value>
         </item>
       </dictionary>
     </pickle>
