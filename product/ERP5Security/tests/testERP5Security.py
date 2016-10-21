@@ -498,12 +498,8 @@ class TestUserManagementExternalAuthentication(TestUserManagement):
     """
 
     reference = 'external_auth_person'
-    loginable_person = self.getPersonModule().newContent(portal_type='Person',
-                                                         reference=reference,
-                                                         password='guest')
-    assignment = loginable_person.newContent(portal_type='Assignment')
-    assignment.open()
-    self.tic()
+    loginable_person = self._makePerson(reference=reference,
+                                        password='guest')
 
     base_url = self.portal.absolute_url(relative=1)
 
@@ -567,13 +563,15 @@ class TestLocalRoleManagement(ERP5TypeTestCase):
     self.username = 'usérn@me'
     # create a user and open an assignement
     pers = self.getPersonModule().newContent(portal_type='Person',
-                                             reference=self.username,
-                                             password=self.username)
+                                             reference=self.username)
     assignment = pers.newContent( portal_type='Assignment',
                                   group='subcat',
                                   site='subcat',
                                   function='subcat' )
     assignment.open()
+    pers.newContent(portal_type='ERP5 Login',
+                    reference=self.username,
+                    password=self.username).validate()
     self.person = pers
     self.tic()
 
