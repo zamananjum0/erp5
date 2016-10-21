@@ -93,10 +93,10 @@ class ERP5UserManager(BasePlugin):
     else:
       return
     is_authentication_policy_enabled = self.getPortalObject().portal_preferences.isAuthenticationPolicyEnabled()
-    if check_password and not pw_validate(
+    if check_password and (not credentials.get('password') or not pw_validate(
       login_value.getPassword(),
       credentials.get('password'),
-    ):
+    )):
       if is_authentication_policy_enabled:
         login_value.notifyLoginFailure()
       return
