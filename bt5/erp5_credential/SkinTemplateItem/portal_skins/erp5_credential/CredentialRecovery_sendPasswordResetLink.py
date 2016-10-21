@@ -14,7 +14,7 @@ if message_reference is None:
 notification_message = portal.NotificationTool_getDocumentValue(message_reference,
                                                                 context.getLanguage())
 
-context.REQUEST.set('came_from', portal.absolute_url())
+context.REQUEST.set('came_from', context.getUrlString())
 
 if context.hasStopDate():
   kw = {'expiration_date':context.getStopDate()}
