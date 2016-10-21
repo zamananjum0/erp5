@@ -195,6 +195,15 @@ class ERP5User(PropertiedUser):
 
     return None
 
+  def getUserName(self):
+    """ -> login name
+
+    In the super class it returns self._login but here it returns
+    self._id instead, because now self._id is the Person's reference
+    and self._login is a dict contains information about login.
+    """
+    return self._id
+
 InitializeClass(ERP5User)
 
 
