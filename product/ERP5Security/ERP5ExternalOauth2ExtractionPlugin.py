@@ -178,8 +178,8 @@ class ERP5ExternalOauth2ExtractionPluginBase(BasePlugin):
       self.REQUEST['USER_CREATION_IN_PROGRESS'] = user
     else:
       # create the user if not found
-      person_list = self.erp5_users.getPersonByReference(user)
-      if len(person_list) == 0:
+      user_list = self.erp5_users.enumerateUsers(id=user)
+      if not user_list:
         sm = getSecurityManager()
         if sm.getUser().getId() != SUPER_USER:
           newSecurityManager(self, self.getUser(SUPER_USER))

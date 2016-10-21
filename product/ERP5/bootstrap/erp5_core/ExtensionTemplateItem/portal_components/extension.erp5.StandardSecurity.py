@@ -53,12 +53,14 @@ def getSecurityCategoryFromAssignment(self, base_category_list, user_name, objec
 
   category_list = []
 
-  person_object = self.getPortalObject().acl_users.erp5_users.getPersonByReference(user_name)
-  if person_object is None:
+  user_list = self.getPortalObject().acl_users.erp5_users.enumerateUsers(id=user_name)
+  if not user_list or not 'path' in user_list[0]:
     # if a person_object was not found in the module, we do nothing more
     # this happens for example when a manager with no associated person object
     # creates a person_object for a new user
     return []
+  else:
+    person_object = self.getPortalObject().unrestrictedTraverse(user_list[0]['path'])
 
   # We look for every valid assignments of this user
   for assignment in person_object.contentValues(filter={'portal_type': 'Assignment'}):

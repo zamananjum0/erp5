@@ -72,9 +72,8 @@ class Login(XMLObject, LoginAccountProviderMixin, EncryptedPasswordMixin):
         self.getPortalType() + '_setReference_' + value.encode('hex')
       # Check that there no existing user
       erp5_users = portal.acl_users.erp5_users
-      login = erp5_users.getLoginObject(value, self.getPortalType())
-      if login is not None and login != self and \
-          login != self.getParentValue():
+      user_list = erp5_users.enumerateUsers(login=value)
+      if [x for x in user_list if x.get('login', {}).get('path', '') != self.getPath()]:
         raise RuntimeError, 'user id %s already exist' % (value,)
       # Check that there is no reindexation related to reference indexation
       if portal.portal_activities.countMessageWithTag(tag):

@@ -31,7 +31,7 @@ import sys
 
 from zLOG import LOG, WARNING
 
-from ERP5UserManager import SUPER_USER, getUserByLogin
+from ERP5UserManager import SUPER_USER
 
 # It can be useful to set NO_CACHE_MODE to 1 in order to debug
 # complex security issues related to caching groups. For example,
@@ -117,9 +117,16 @@ class ERP5GroupManager(BasePlugin):
           security_definition_list = mapping_method()
 
         # get the person from its login - no security check needed
-        person_object = self.erp5_users.getPersonByReference(user_name)
-        if person_object is None: # no person is linked to this user login
+        user_list = self.erp5_users.enumerateUsers(id=user_name)
+        if not user_list:
           return ()
+        else:
+          path = user_list[0].get('path')
+          if path:
+            person_object = self.getPortalObject().unrestrictedTraverse(path)
+          else:
+            # not ERP5 user
+            return ()
 
         # Fetch category values from defined scripts
         for (method_name, base_category_list) in security_definition_list:

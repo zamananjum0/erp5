@@ -46,8 +46,6 @@ from Products.PluggableAuthService.plugins.CookieAuthHelper import CookieAuthHel
 
 from Products.ERP5Type.Cache import CachingMethod
 from Products.ERP5Type.UnrestrictedMethod import UnrestrictedMethod
-from Products.ERP5Security.ERP5UserManager import SUPER_USER,\
-                                                  _AuthenticationFailure
 
 from Crypto.Cipher import AES
 from Crypto import Random

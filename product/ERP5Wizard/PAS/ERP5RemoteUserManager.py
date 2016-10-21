@@ -25,7 +25,7 @@ from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlug
                                                              IUserEnumerationPlugin
 from Products.ERP5Type.Cache import CachingMethod
 from DateTime import DateTime
-from Products.ERP5Security.ERP5UserManager import ERP5UserManager, SUPER_USER, _AuthenticationFailure
+from Products.ERP5Security.ERP5UserManager import ERP5UserManager
 
 from BTrees.OOBTree import OOBTree
 from zLOG import LOG, INFO, WARNING
