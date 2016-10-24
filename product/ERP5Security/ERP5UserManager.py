@@ -15,7 +15,7 @@
 """ Classes: ERP5UserManager
 """
 
-from funtools import partial
+from functools import partial
 from Products.ERP5Type.Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.AuthEncoding import pw_validate
