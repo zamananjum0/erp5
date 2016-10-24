@@ -33,6 +33,7 @@
 import unittest
 from Products.ERP5Type.tests.ERP5TypeTestCase import ERP5TypeTestCase
 from Products.ERP5Type.tests.utils import createZODBPythonScript
+from unittest import expectedFailure
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import getSecurityManager
 from Products.PluggableAuthService import PluggableAuthService
@@ -761,6 +762,7 @@ class TestLocalRoleManagement(ERP5TypeTestCase):
     self.assertFalse('Assignor' in
             getSecurityManager().getUser().getRolesInContext(obj))
 
+  @expectedFailure
   def testGetUserByLogin(self):
     """Test getUserByLogin method
     """
