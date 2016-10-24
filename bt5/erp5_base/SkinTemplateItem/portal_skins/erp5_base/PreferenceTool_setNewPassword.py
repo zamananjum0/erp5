@@ -3,8 +3,7 @@ from Products.ERP5Type.Message import translateString
 
 portal = context.getPortalObject()
 user = getSecurityManager().getUser()
-person = portal.restrictedTraverse(portal.acl_users.erp5_users.enumerateUsers(id=user.getId())[0]['path'])
-for login in person.objectValues(portal_type='ERP5 Login'):
+for login in user.getLoginValueList(portal_type='ERP5 Login'):
   if login.getReference() == reference and login.getValidationState() == 'validated':
     break
 else:
