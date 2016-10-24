@@ -110,9 +110,6 @@ class ERP5UserManager(BasePlugin):
     return (user_value.getReference(), login_value.getReference())
 
   def _getLoginValueFromLogin(self, login, login_portal_type=None):
-    # Forbidden the usage of the super user.
-    if login == SUPER_USER:
-      return
     user_list = self.enumerateUsers(
       login=login,
       exact_match=True,
