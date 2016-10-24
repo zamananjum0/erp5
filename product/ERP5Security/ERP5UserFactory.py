@@ -214,14 +214,14 @@ class ERP5User(PropertiedUser):
     result = self._user_value
     if result is not None:
       return result
-    user, = [x for x in self.aq_parent.searchUsers(
+    user_list = [x for x in self.aq_parent.searchUsers(
       exact_match=True,
       id=self.getId(),
     ) if 'path' in x]
-    result = self._user_value = self.getPortalObject().restrictedTraverse(
-      user['path'],
-    )
-    return result
+    if len(user_list) == 1:
+      result = self._user_value = self.getPortalObject().restrictedTraverse(
+        user_list[0]['path'])
+      return result
 
   def getLoginValue(self):
     """ -> login document
