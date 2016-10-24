@@ -15,6 +15,7 @@
 """ Classes: ERP5UserManager
 """
 
+from funtools import partial
 from Products.ERP5Type.Globals import InitializeClass
 from AccessControl import ClassSecurityInfo
 from AccessControl.AuthEncoding import pw_validate
@@ -142,10 +143,11 @@ class ERP5UserManager(BasePlugin):
     ).dictionaries()
     searchLogin = lambda **kw: unrestrictedSearchResults(
       select_list=('parent_uid', 'reference'),
-      portal_type=login_portal_type or [],
       validation_state='validated',
       **kw
     ).dictionaries()
+    if login_portal_type is not None:
+      searchLogin = partial(searchLogin, portal_type=login_portal_type)
     if login is None:
       # Only search by id if login is not given. Same logic as in
       # PluggableAuthService.searchUsers.
@@ -209,7 +211,7 @@ class ERP5UserManager(BasePlugin):
         'id': user['reference'],
         # Note: PAS forbids us from returning more than one entry per given id,
         # so take any available login.
-        'login': login_dict.get(user['uid'], [None])[0],
+        'login': login_dict.get(user['uid'], [None])[0]['reference'],
         'pluginid': plugin_id,
 
         # Extra properties, specific to ERP5
