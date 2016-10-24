@@ -86,7 +86,7 @@ class ERP5GroupManager(BasePlugin):
       return ()
 
     @UnrestrictedMethod
-    def _getGroupsForPrincipal(user_name, path):
+    def _getGroupsForPrincipal(user_id, path):
       security_category_dict = {} # key is the base_category_list,
                                   # value is the list of fetched categories
       security_group_list = []
@@ -117,16 +117,15 @@ class ERP5GroupManager(BasePlugin):
           security_definition_list = mapping_method()
 
         # get the person from its login - no security check needed
-        user_list = self.erp5_users.enumerateUsers(id=user_name)
-        if not user_list:
+        user_list = [
+          x for x in self.searchUsers(id=user_id, exact_match=True)
+          if 'path' in x
+        ]
+        if len(user_list) != 1:
           return ()
-        else:
-          path = user_list[0].get('path')
-          if path:
-            person_object = self.getPortalObject().unrestrictedTraverse(path)
-          else:
-            # not ERP5 user
-            return ()
+        user, = user_list
+        path = user['path']
+        person_object = self.getPortalObject().unrestrictedTraverse(path)
 
         # Fetch category values from defined scripts
         for (method_name, base_category_list) in security_definition_list:
@@ -140,7 +139,7 @@ class ERP5GroupManager(BasePlugin):
             # Currently, passing portal_type='' (instead of 'Person')
             # is the only way to make the difference.
             security_category_list.extend(
-              method(base_category_list, user_name, person_object, '')
+              method(base_category_list, user_id, person_object, '')
             )
           except ConflictError:
             raise
@@ -183,7 +182,7 @@ class ERP5GroupManager(BasePlugin):
                                              cache_factory='erp5_content_short')
 
     return _getGroupsForPrincipal(
-                user_name=principal.getId(),
+                user_id=principal.getId(),
                 path=self.getPhysicalPath())
 
 
