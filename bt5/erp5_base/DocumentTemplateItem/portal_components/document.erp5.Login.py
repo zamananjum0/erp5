@@ -71,10 +71,15 @@ class Login(XMLObject, LoginAccountProviderMixin, EncryptedPasswordMixin):
       activate_kw['tag'] = tag = \
         self.getPortalType() + '_setReference_' + value.encode('hex')
       # Check that there no existing user
-      erp5_users = portal.acl_users.erp5_users
-      user_list = erp5_users.enumerateUsers(login=value)
-      if [x for x in user_list if x.get('login', {}).get('path', '') != self.getPath()]:
-        raise RuntimeError, 'user id %s already exist' % (value,)
+      user_list = [x for x in portal.acl_users.searchUsers(
+        exact_match=True,
+        login=self.getReference(),
+      ) if 'login_list' in x]
+      if user_list:
+        for user in user_list:
+          login, = user['login_list']
+          if login['path'] == self.getPath():
+            raise RuntimeError, 'user id %s already exist' % (value,)
       # Check that there is no reindexation related to reference indexation
       if portal.portal_activities.countMessageWithTag(tag):
         raise RuntimeError, 'user id %s already exist' % (value,)
