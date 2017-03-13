@@ -340,6 +340,15 @@ class TestTemplateTool(ERP5TypeTestCase):
     self.assertEqual(None,
       self.portal.portal_templates.getInstalledBusinessTemplate('test_bt_%s' % self.id()))
 
+  def test_getInstalledBusinessTemplate_never_installed(self):
+    never_installed_bt = self.portal.portal_templates.newContent(
+        portal_type='Business Template',
+        title='never_installed_bt_%s' % self.id())
+    self.tic()
+    self.assertEqual(
+        None,
+        self.portal.portal_templates.getInstalledBusinessTemplate('never_installed_bt_%s' % self.id()))
+
   def test_revision(self):
     template_tool = self.portal.portal_templates
     getInstalledRevision = template_tool.getInstalledBusinessTemplateRevision
