@@ -16,6 +16,8 @@ from ZODB import DemoStorage as _DemoStorage
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 from ZODB.POSException import ConflictError
 
+assert not issubclass(_DemoStorage.DemoStorage, ConflictResolvingStorage)
+
 class DemoStorage(_DemoStorage.DemoStorage, ConflictResolvingStorage):
     ##
     # Implement conflict resolution for DemoStorage
@@ -31,6 +33,4 @@ class DemoStorage(_DemoStorage.DemoStorage, ConflictResolvingStorage):
             self.changes.store(oid, old, rdata, '', transaction)
             return ResolvedSerial
 
-if not issubclass(_DemoStorage.DemoStorage, ConflictResolvingStorage):
-    # BBB: ZODB < 4.3
-    _DemoStorage.DemoStorage = DemoStorage
+_DemoStorage.DemoStorage = DemoStorage
