@@ -10,7 +10,7 @@ def getCurrencyForSectionCategory(section_category, section_category_strict):
   for section_uid in portal.Base_getSectionUidListForSectionCategory(
       section_category, section_category_strict):
     if section_uid != -1:
-      section = portal.portal_catalog.getObject(section_uid)
+      section = portal.portal_catalog(uid=section_uid)[0].getObject()
       currency = section.getPriceCurrency()
       if currency:
         currency_set.add(currency)

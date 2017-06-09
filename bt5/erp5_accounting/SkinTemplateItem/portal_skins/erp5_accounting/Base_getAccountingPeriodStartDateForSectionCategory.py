@@ -12,7 +12,7 @@ def getAccountingPeriodStartDateForSectionCategory(section_category, date):
   period_start_date = None
   for uid in section_uid:
     if uid == -1: continue # Base_getSectionUidListForSectionCategory returns [-1] if no section_uid exists 
-    section = portal.portal_catalog.getObject(uid)
+    section = portal.portal_catalog(uid=uid)[0].getObject()
     for ap in section.contentValues(portal_type='Accounting Period',
                         checked_permission='Access contents information'):
       if ap.getSimulationState() not in ('planned', 'confirmed',

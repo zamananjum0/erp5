@@ -72,14 +72,12 @@ net_balance = 0.0
 # accounts from PL have a balance calculated differently
 is_pl_account = False
 if params.get('node_uid'):
-  if context.getUid() == params['node_uid']:
+  if context.getUid() == params['node_uid']: # shortcut
     node = context
-    is_pl_account = context.isMemberOf('account_type/expense')\
-                 or context.isMemberOf('account_type/income')
   else:
-    node = portal.portal_catalog.getObject(params['node_uid'])
-    is_pl_account = node.isMemberOf('account_type/expense')\
-                 or node.isMemberOf('account_type/income')
+    node = portal.portal_catalog(uid=params['node_uid'])[0].getObject()
+  is_pl_account = node.isMemberOf('account_type/expense')\
+               or node.isMemberOf('account_type/income')
 
 # remove unknown catalog keys from params
 params.pop('detailed_from_date_summary', None)
@@ -197,11 +195,11 @@ if from_date or is_pl_account:
             node_translated_title=node.getTranslatedTitle()
           )
         if params.get('mirror_section_uid'):
-          mirror_section = portal.portal_catalog.getObject(params['mirror_section_uid'])
+          mirror_section = portal.portal_catalog(uid=params['mirror_section_uid'])[0].getObject()
           previous_balance.edit(
             mirror_section_title=mirror_section.getTitle()
           )
-        section = portal.portal_catalog.getObject(section_uid)
+        section = portal.portal_catalog(uid=section_uid)[0].getObject()
         previous_balance.edit(
           Movement_getSectionPriceCurrency=section.getPriceCurrencyReference(),
           resource_reference=section.getPriceCurrencyReference(),
